@@ -1,0 +1,30 @@
+{
+  "name": "backendtask",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start":"nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "argon2": "^0.44.0",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "express-fileupload": "^1.5.2",
+    "joi": "^18.0.2",
+    "jsonwebtoken": "^9.0.3",
+    "mysql2": "^3.16.3",
+    "node-twillo-otp-manager": "^1.0.0",
+    "nodemailer": "^8.0.0",
+    "nodemon": "^3.1.11",
+    "sequelize": "^6.37.7",
+    "stripe": "^20.3.0"
+  }
+}
