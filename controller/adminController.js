@@ -15,10 +15,14 @@ module.exports = {
       const payload = await helper.validationJoi(req.body, schema);
       const { email, password } = payload;
       const hash = await argon2.hash(password);
+      const Emaildata=await Models.userModel.findOne({where:{email}})
+      if(Emaildata)
+      {
+        return res.status(404).json({message:"EMAIL ALREADY EXIST!"})
+      }
       const admin = await Models.userModel.create({
         email,
-        password: hash,
-        otp,
+        password: hash
       });
       await Models.userModel.update(
         { role: 2, deviceToken: 1, passCode: 123 },
