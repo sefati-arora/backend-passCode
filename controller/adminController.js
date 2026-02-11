@@ -14,25 +14,21 @@ module.exports = {
       });
       const payload = await helper.validationJoi(req.body, schema);
       const { email, password } = payload;
-      const hash = await argon2.hash(password);
-      const Emaildata=await Models.userModel.findOne({where:{email}})
-      if(Emaildata)
-      {
-        return res.status(404).json({message:"EMAIL ALREADY EXIST!"})
+      var admin = await Models.userModel.findOne({ where: { email } });
+      console.log(admin);
+      if (!admin) {
+        const hash = await argon2.hash(password);
+         admin = await Models.userModel.create({
+          email,
+          password: hash,
+          role: 2,
+          deviceToken: 1,
+          passCode: 123,
+          step: 1,
+        });
       }
-      const admin = await Models.userModel.create({
-        email,
-        password: hash
-      });
-      await Models.userModel.update(
-        { role: 2, deviceToken: 1, passCode: 123 },
-        { where: { id: admin.id } },
-      );
-      const update = await Models.userModel.findOne({
-        where: { id: admin.id },
-      });
       const token = jwt.sign({ id: admin.id }, process.env.SECRET_KEY);
-      return res.status(200).json({ message: "ADMIN LOGIN!", update, token });
+      return res.status(200).json({ message: "ADMIN LOGIN!", admin, token });
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: " SERVER ERROR", error });
@@ -53,7 +49,7 @@ module.exports = {
         return res.status(401).json({ message: "INVALID OTP" });
       }
       await Models.userModel.update(
-        { otpVerify: 2, otp: null },
+        { otpVerify: 2, otp: null, step: 3 },
         { where: { email } },
       );
       return res.status(200).json({ message: "OTP VERIFIED!" });
@@ -126,7 +122,7 @@ module.exports = {
       }
       const otp = Math.floor(1000 + Math.random() * 9000);
       await Models.userModel.update(
-        { passCode: newPassCode, otp },
+        { passCode: newPassCode, otp, step: 2 },
         { where: { id } },
       );
       const otpSend = await commonHelper.otpSendLinkHTML(req, admin.email, otp);

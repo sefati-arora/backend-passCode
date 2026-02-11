@@ -57,6 +57,12 @@ module.exports=(Sequelize,sequelize,DataTypes)=>
             {
                 type:DataTypes.STRING(100),
                 allowNull:true
+            },
+            step:
+            {
+                type:DataTypes.INTEGER,
+                allowNull:true,
+                defaultValue:0  //1 for login,2  for passcodeChang, 3 while otpsend
             }
         },
         {
