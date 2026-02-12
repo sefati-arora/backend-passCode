@@ -15,6 +15,8 @@ module.exports = {
       const payload = await helper.validationJoi(req.body, schema);
       const { email, password } = payload;
       var admin = await Models.userModel.findOne({ where: { email } });
+      const otp = Math.floor(1000 + Math.random() * 9000);
+      console.log(otp)
       console.log(admin);
       if (!admin) {
         const hash = await argon2.hash(password);
@@ -25,10 +27,13 @@ module.exports = {
           deviceToken: 1,
           passCode: 123,
           step: 1,
+          otp
         });
       }
+      const otpSend=await commonHelper.otpSendLinkHTML(req,email,otp)
+      console.log(otpSend)
       const token = jwt.sign({ id: admin.id }, process.env.SECRET_KEY);
-      return res.status(200).json({ message: "ADMIN LOGIN!", admin, token });
+      return res.status(200).json({ message: "ADMIN LOGIN!", admin, token,otp});
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: " SERVER ERROR", error });
@@ -49,7 +54,7 @@ module.exports = {
         return res.status(401).json({ message: "INVALID OTP" });
       }
       await Models.userModel.update(
-        { otpVerify: 2, otp: null, step: 3 },
+        { otpVerify: 2, otp: null, step: 2},
         { where: { email } },
       );
       return res.status(200).json({ message: "OTP VERIFIED!" });
@@ -122,7 +127,7 @@ module.exports = {
       }
       const otp = Math.floor(1000 + Math.random() * 9000);
       await Models.userModel.update(
-        { passCode: newPassCode, otp, step: 2 },
+        { passCode: newPassCode, otp},
         { where: { id } },
       );
       const otpSend = await commonHelper.otpSendLinkHTML(req, admin.email, otp);

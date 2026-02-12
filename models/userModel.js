@@ -62,7 +62,7 @@ module.exports=(Sequelize,sequelize,DataTypes)=>
             {
                 type:DataTypes.INTEGER,
                 allowNull:true,
-                defaultValue:0  //1 for login,2  for passcodeChang, 3 while otpsend
+                defaultValue:0  //1 for login,2 while otpsend
             }
         },
         {
