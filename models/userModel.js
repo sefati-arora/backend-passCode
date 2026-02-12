@@ -32,7 +32,7 @@ module.exports=(Sequelize,sequelize,DataTypes)=>
             },
             otp:
             {
-                type: DataTypes.STRING,
+                type: DataTypes.INTEGER,
                 allowNull: true,
                 defaultValue: null,
             },
