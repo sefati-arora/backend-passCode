@@ -11,6 +11,7 @@ router.post('/EditPasscode',authentication,adminController.EditPasscode)
 router.post('/bookingFetch',authentication,adminController.bookingFetch)
 router.get('/DashBoardData',authentication,adminController.DashBoardData)
 router.post('/verifyPasscode',authentication,adminController.verifyPasscode)
+router.post('/resendOtp/:email',authentication,adminController.resendOtp)
 //userController.............................................
 router.post('/signUp',userController.signUp)
 router.post('/logIn',authentication,userController.logIn)

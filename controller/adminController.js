@@ -16,11 +16,9 @@ module.exports = {
       const { email, password } = payload;
       var admin = await Models.userModel.findOne({ where: { email } });
       const otp = Math.floor(1000 + Math.random() * 9000);
-      console.log(otp);
-      console.log(admin);
       if (!admin) {
         const hash = await argon2.hash(password);
-        admin = await Models.userModel.create({
+        admin=await Models.userModel.create({
           email,
           password: hash,
           role: 2,
@@ -31,7 +29,7 @@ module.exports = {
         });
       }
       const otpSend = await commonHelper.otpSendLinkHTML(req, email, otp);
-      console.log(otpSend);
+      console.log(otpSend)
       const token = jwt.sign({ id: admin.id }, process.env.SECRET_KEY);
       return res
         .status(200)
@@ -39,6 +37,26 @@ module.exports = {
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: " SERVER ERROR", error });
+    }
+  },
+  resendOtp:async(req,res)=>
+  {
+    try
+    {
+      const{email}=req.params;
+      var admin=await Models.userModel.findOne({where:{email}})
+       const otp= Math.floor(1000 + Math.random() * 9000);
+      if(admin)
+        {
+          await Models.userModel.update({otp},{where:{email}})
+        }  
+      const otpSend=await commonHelper.otpSendLinkHTML(req,email,otp)
+      return res.status(200).json({message:"ADMIN OTP RESEND!",otpSend})
+    }
+    catch(error)
+    {
+      console.log(error)
+      return res.status(500).json({message:"ERROR",error})
     }
   },
   otpVerify: async (req, res) => {
@@ -49,24 +67,17 @@ module.exports = {
         return res.status(400).json({ message: "OTP NOT FOUND!" });
       }
       const otpNumber = parseInt(otp);
-      console.log("<><><>", typeof otpNumber);
       const admin = await Models.userModel.findOne({ where: { email } });
       if (!admin) {
         return res.status(404).json({ message: "ADMIN NOT FOUND!" });
       }
-      console.log(admin.otp);
-      console.log("OTP from frontend:", otp);
-      console.log("OTP after parse:", otpNumber);
-      console.log("OTP in DB:", admin.otp);
       if (admin.otp != otpNumber) {
         return res.status(401).json({ message: "INVALID OTP" });
       }
-
       await Models.userModel.update(
         { otpVerify: 2, otp: null, step: 2 },
         { where: { email } },
       );
-
       return res.status(200).json({ message: "OTP VERIFIED!" });
     } catch (error) {
       console.log(error);
