@@ -141,7 +141,7 @@ module.exports = {
       }
       console.log(">>", admin.passCode);
       if (admin.passCode !== currentPassCode) {
-        return res.status(404).json({ message: "INVALID PASSCODE" });
+        return res.status(400).json({ message: "INVALID PASSCODE" });
       }
       if (currentPassCode == newPassCode) {
         return res.status(400).json({ message: "PASSCODE MUST BE DIFFERENT!" });
