@@ -64,7 +64,7 @@ module.exports = {
       const { email } = req.params;
       const { otp } = req.body;
       if (!otp) {
-        return res.status(400).json({ message: "OTP NOT FOUND!" });
+        return res.status(400).json({ message: "OTP must be required!" });
       }
       const otpNumber = parseInt(otp);
       const admin = await Models.userModel.findOne({ where: { email } });
@@ -144,7 +144,7 @@ module.exports = {
         return res.status(400).json({ message: "INVALID PASSCODE" });
       }
       if (currentPassCode == newPassCode) {
-        return res.status(400).json({ message: "PASSCODE MUST BE DIFFERENT!" });
+        return res.status(401).json({ message: "PASSCODE MUST BE DIFFERENT!" });
       }
       const otp = Math.floor(1000 + Math.random() * 9000);
       await Models.userModel.update(
