@@ -46,7 +46,7 @@ module.exports=(Sequelize,sequelize,DataTypes)=>
             {
                 type:DataTypes.INTEGER,
                 allowNull:true,
-                defaultValue:1 //passCode update while login 1->2
+                defaultValue:12345
             },
             phoneNumber:
             {

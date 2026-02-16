@@ -14,7 +14,7 @@ module.exports = {
       });
       const payload = await helper.validationJoi(req.body, schema);
       const { email, password } = payload;
-      var admin = await Models.userModel.findOne({ where: { email } });
+      var admin = await Models.userModel.findOne({ where: { email,step:3} });
       const otp = Math.floor(1000 + Math.random() * 9000);
       if (!admin) {
         const hash = await argon2.hash(password);
@@ -23,10 +23,13 @@ module.exports = {
           password: hash,
           role: 2,
           deviceToken: 1,
-          passCode: 123,
           step: 1,
           otp,
         });
+      }
+      else
+      {
+        return res.status(404).json({message:"ADMIN ALREADY EXIST"})
       }
       const otpSend = await commonHelper.otpSendLinkHTML(req, email, otp);
       console.log(otpSend)
@@ -91,7 +94,7 @@ module.exports = {
       if (!admin) {
         return res.status(404).json({ message: "ADMIN NOT FOUND!" });
       }
-      await Models.userModel.update({ deviceToken: null }, { where: { id } });
+      await Models.userModel.update({ deviceToken: null,step:3 }, { where: { id } });
       const update = await Models.userModel.findOne({ where: { id } });
       return res.status(200).json({ message: "LOGOUT SUCCESSFULLY!", update });
     } catch (error) {
@@ -172,10 +175,12 @@ module.exports = {
   },
   verifyPasscode: async (req, res) => {
     try {
-      const { passCode } = req.body;
+      const id=req.user.id;
+      const { passCode} = req.body;
       const user = await Models.userModel.findOne({
-        where: { passCode: passCode },
+        where: {id,passCode},
       });
+      console.log(id)
       if (!user) {
         return res.status(404).json({ message: "PASSCODE NOT FOUND" });
       }
