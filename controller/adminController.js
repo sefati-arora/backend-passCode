@@ -14,7 +14,7 @@ module.exports = {
       });
       const payload = await helper.validationJoi(req.body, schema);
       const { email, password } = payload;
-      var admin = await Models.userModel.findOne({ where: { email,step:3} });
+      var admin = await Models.userModel.findOne({ where: { email } });
       const otp = Math.floor(1000 + Math.random() * 9000);
       if (!admin) {
         const hash = await argon2.hash(password);
@@ -27,9 +27,10 @@ module.exports = {
           otp,
         });
       }
-      else
+      const adminfound=await Models.userModel.findOne({where:{email,step:3}})
+      if(adminfound)
       {
-        return res.status(404).json({message:"ADMIN ALREADY EXIST"})
+        return res.status(401).json({message:"ADMIN ALREADY EXIST"})
       }
       const otpSend = await commonHelper.otpSendLinkHTML(req, email, otp);
       console.log(otpSend)
@@ -190,4 +191,22 @@ module.exports = {
       return res.status(500).json({ message: "ERROR!", error });
     }
   },
+  viewUser:async(req,res)=>
+  {
+    try
+    {
+     const{id}=req.params;
+     const user=await Models.userModel.findOne({where:{id}})
+     if(!user)
+     {
+      return res.status(404).json({message:"user not found"})
+     }
+     return res.status(200).json({message:"USER FETCH:",user})
+    }
+    catch(error)
+    {
+      console.log(error)
+      return res.status(500).json({message:"ERROR",error})
+    }
+  }
 };
