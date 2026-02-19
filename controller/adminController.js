@@ -18,7 +18,7 @@ module.exports = {
       const otp = Math.floor(1000 + Math.random() * 9000);
       if (!admin) {
         const hash = await argon2.hash(password);
-        admin=await Models.userModel.create({
+        admin = await Models.userModel.create({
           email,
           password: hash,
           role: 2,
@@ -27,13 +27,14 @@ module.exports = {
           otp,
         });
       }
-      const adminfound=await Models.userModel.findOne({where:{email,step:3}})
-      if(adminfound)
-      {
-        return res.status(401).json({message:"ADMIN ALREADY EXIST"})
+      const adminfound = await Models.userModel.findOne({
+        where: { email, step: 3 },
+      });
+      if (adminfound) {
+        return res.status(401).json({ message: "ADMIN ALREADY EXIST" });
       }
       const otpSend = await commonHelper.otpSendLinkHTML(req, email, otp);
-      console.log(otpSend)
+      console.log(otpSend);
       const token = jwt.sign({ id: admin.id }, process.env.SECRET_KEY);
       return res
         .status(200)
@@ -43,24 +44,19 @@ module.exports = {
       return res.status(500).json({ message: " SERVER ERROR", error });
     }
   },
-  resendOtp:async(req,res)=>
-  {
-    try
-    {
-      const{email}=req.params;
-      var admin=await Models.userModel.findOne({where:{email}})
-       const otp= Math.floor(1000 + Math.random() * 9000);
-      if(admin)
-        {
-          await Models.userModel.update({otp},{where:{email}})
-        }  
-      const otpSend=await commonHelper.otpSendLinkHTML(req,email,otp)
-      return res.status(200).json({message:"ADMIN OTP RESEND!",otpSend})
-    }
-    catch(error)
-    {
-      console.log(error)
-      return res.status(500).json({message:"ERROR",error})
+  resendOtp: async (req, res) => {
+    try {
+      const { email } = req.params;
+      var admin = await Models.userModel.findOne({ where: { email } });
+      const otp = Math.floor(1000 + Math.random() * 9000);
+      if (admin) {
+        await Models.userModel.update({ otp }, { where: { email } });
+      }
+      const otpSend = await commonHelper.otpSendLinkHTML(req, email, otp);
+      return res.status(200).json({ message: "ADMIN OTP RESEND!", otpSend });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "ERROR", error });
     }
   },
   otpVerify: async (req, res) => {
@@ -95,7 +91,10 @@ module.exports = {
       if (!admin) {
         return res.status(404).json({ message: "ADMIN NOT FOUND!" });
       }
-      await Models.userModel.update({ deviceToken: null,step:3 }, { where: { id } });
+      await Models.userModel.update(
+        { deviceToken: null, step: 3 },
+        { where: { id } },
+      );
       const update = await Models.userModel.findOne({ where: { id } });
       return res.status(200).json({ message: "LOGOUT SUCCESSFULLY!", update });
     } catch (error) {
@@ -176,12 +175,12 @@ module.exports = {
   },
   verifyPasscode: async (req, res) => {
     try {
-      const id=req.user.id;
-      const { passCode} = req.body;
+      const id = req.user.id;
+      const { passCode } = req.body;
       const user = await Models.userModel.findOne({
-        where: {id,passCode},
+        where: { id, passCode },
       });
-      console.log(id)
+      console.log(id);
       if (!user) {
         return res.status(404).json({ message: "PASSCODE NOT FOUND" });
       }
@@ -191,22 +190,17 @@ module.exports = {
       return res.status(500).json({ message: "ERROR!", error });
     }
   },
-  viewUser:async(req,res)=>
-  {
-    try
-    {
-     const{id}=req.params;
-     const user=await Models.userModel.findOne({where:{id}})
-     if(!user)
-     {
-      return res.status(404).json({message:"user not found"})
-     }
-     return res.status(200).json({message:"USER FETCH:",user})
+  viewUser: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const user = await Models.userModel.findOne({ where: { id } });
+      if (!user) {
+        return res.status(404).json({ message: "user not found" });
+      }
+      return res.status(200).json({ message: "USER FETCH:", user });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "ERROR", error });
     }
-    catch(error)
-    {
-      console.log(error)
-      return res.status(500).json({message:"ERROR",error})
-    }
-  }
+  },
 };
