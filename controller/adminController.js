@@ -26,12 +26,11 @@ module.exports = {
           step: 1,
           otp,
         });
-      }
-      const adminfound = await Models.userModel.findOne({
-        where: { email, step: 3 },
-      });
-      if (adminfound) {
-        return res.status(401).json({ message: "ADMIN ALREADY EXIST" });
+      } else {
+        await Models.userModel.update(
+          { otp: otp, otpVerify: 1 },
+          { where: { email } },
+        );
       }
       const otpSend = await commonHelper.otpSendLinkHTML(req, email, otp);
       console.log(otpSend);
@@ -92,7 +91,7 @@ module.exports = {
         return res.status(404).json({ message: "ADMIN NOT FOUND!" });
       }
       await Models.userModel.update(
-        { deviceToken: null, step: 3 },
+        { deviceToken: null, step: 1, otpVerify: 1 },
         { where: { id } },
       );
       const update = await Models.userModel.findOne({ where: { id } });
