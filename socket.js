@@ -71,7 +71,7 @@ module.exports = (io) => {
             error_message: "userId not found",
           });
         }
-        console.log("socket",user.socketId)
+        console.log("socket", user.socketId);
         const newStatus = user.status == 1 ? 0 : 1;
         await Models.userModel.update(
           { status: newStatus },
@@ -85,7 +85,7 @@ module.exports = (io) => {
             error_message: "error ",
           });
         }
-        io.to(user.socketId).emit("status_listener", {
+        socket.emit("status_listener", {
           success_msg: "status updated",
           status: newStatus,
         });
