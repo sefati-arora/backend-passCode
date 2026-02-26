@@ -103,7 +103,7 @@ module.exports = {
   },
   userFetch: async (req, res) => {
     try {
-      const user = await Models.userModel.findAll({ where: { role: 1 } });
+      const user = await Models.userModel.findAll();
       if (!user) {
         return res.status(404).json({ message: "USER NOT FOUND!" });
       }
@@ -201,5 +201,5 @@ module.exports = {
       console.log(error);
       return res.status(500).json({ message: "ERROR", error });
     }
-  },
+  }
 };

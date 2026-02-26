@@ -8,6 +8,12 @@ const path=require("path");
 const connectdb=require('./config/connectdb')
 require('./models/index')
 const router=require('./router/userRouter')
+const socketHandler = require("./socket");
+const http=require("http")
+const {Server}=require("socket.io")
+const server=http.createServer(app);
+const io=new Server(server,{cors:{origin:"*",methods:["GET","POST"]}});
+socketHandler(io);
 app.use("/images", express.static(path.join(__dirname, "public/images")));
  app.set("view engine", "ejs");
   app.set("views", path.join(__dirname, "views"));
@@ -25,8 +31,7 @@ app.get('/',(req,res)=>
 {
     res.send("SERVER CREATED FOR TASK!")
 })
-
-app.listen(PORT,()=>
+server.listen(PORT,()=>
 {
     console.log(`server created at http://localhost:${PORT}`)
 })
